@@ -1,0 +1,97 @@
+day-1 agenda
+
+==> today we will create an ec2 instance (amazon linux) in aws 
+==> create a config file to so that we can easily connect to ec2 directly when we change public  ip address (as every session gives new public ip address) in config file
+==> system information current user, server start time, uname (unix name kernel release) and other informations
+
+============= >> .ssh/config file setup << ==========
+once after creating ec2 instance amazon server then in local setup (your pc) open terminal and type "cd ~/.ssh" it will enter into .ssh folder (user can create "config" at any paths like downloads, documents and other) 
+
+create config file we can use cat/vim/nano 
+
+Host devops-ec2 (user can keep any name)
+HostName 65.2.190.72 (public ip address)
+user ec2-user (by default ec2-user will be username)
+Other AMIs may use different usernames, such as:
+Ubuntu → ubuntu
+Debian → debian
+CentOS → centos
+
+IdentityFile ~/Downloads/formac.pem (pem [ssh key] file location)
+StrictHostKeyChecking no
+Prevents SSH from asking whether to trust the server the first time you connect.
+It automatically accepts the server's host key.
+This is convenient for testing, but for production environments it's generally better to leave host key checking enabled to help protect against connecting to an unexpected server.
+
+how to use it 
+once we save configuration
+we can type in terminal "ssh devops-ec2"
+if we save config file in downloads we must tell ssh where to find it
+ssh -F ~/Downloads/config devops-ec2
+Here, -F specifies an alternate SSH configuration file.
+better recommandation to create in /.ssh folder 
+
+instead of typing ssh -i ~/downloads/formac.pem ec2-user@85.2.190.72
+
+
+=============== >> system information << =========
+
+current user:
+whoami
+ec2-user
+
+kernel unix name kernel release:
+uname -r
+6.18.33-63.124.amzn2023.x86_64
+
+server start time uptime:
+[ec2-user@ip-172-31-34-95 ~]$ uptime
+ 05:47:49 up 40 min,  2 users,  load average: 0.00, 0.00, 0.00
+
+memory: 
+[ec2-user@ip-172-31-34-95 ~]$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           912Mi       158Mi       499Mi       0.0Ki       255Mi       623Mi
+Swap:             0B          0B          0B
+
+Disk Space: 
+[ec2-user@ip-172-31-34-95 ~]$ df -h
+Filesystem        Size  Used Avail Use% Mounted on
+devtmpfs          420M     0  420M   0% /dev
+tmpfs             457M     0  457M   0% /dev/shm
+tmpfs             183M  444K  183M   1% /run
+efivarfs          128K  2.7K  121K   3% /sys/firmware/efi/efivars
+/dev/nvme0n1p1    8.0G  1.8G  6.2G  22% /
+tmpfs             457M     0  457M   0% /tmp
+/dev/nvme0n1p128   10M  1.3M  8.7M  13% /boot/efi
+tmpfs              92M     0   92M   0% /run/user/1000
+
+Running Processes (first 10):
+
+[ec2-user@ip-172-31-34-95 ~]$ ps aux |head -10
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  1.8 173084 17524 ?        Ss   05:07   0:01 /usr/lib/systemd/systemd --switched-root --system --deserialize=32
+root           2  0.0  0.0      0     0 ?        S    05:07   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        S    05:07   0:00 [pool_workqueue_release]
+root           4  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/R-rcu_gp]
+root           5  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/R-sync_wq]
+root           6  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/R-kvfree_rcu_reclaim]
+root           7  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/R-slub_flushwq]
+root           8  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/R-netns]
+root          10  0.0  0.0      0     0 ?        I<   05:07   0:00 [kworker/0:0H-events_highpri]
+
+KEY OBSERVATIONS:
+- SSH works without typing the full IP/key path (using config alias)
+- EC2 user is: ec2-user (not root)
+- Memory available: [X GB] (should be ~1GB on t2.micro)
+- Disk available: [X GB] (should be ~6-7GB on /dev/xvda1)
+- OS: Amazon Linux 2023
+- Kernel: 6.1.x series
+
+LEARNED TODAY:
+✓ SSH key permissions matter (chmod 400)
+✓ SSH config aliases save typing
+✓ System commands show real-time state (memory, disk, processes)
+✓ ec2-user is the standard non-root user for Amazon Linux
+EOF
+
